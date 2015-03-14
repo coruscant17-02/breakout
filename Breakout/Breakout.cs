@@ -5,6 +5,8 @@ namespace Test
 {
     class TestApplication
     {
+        public const int WALL_NUM = 5;
+
         ///<summary>
         ///アプリケーションのエントリーポイント（ここからプログラムが始まる）
         ///</summary>
@@ -26,33 +28,45 @@ namespace Test
             DX.SetDrawScreen(DX.DX_SCREEN_BACK);
 
             int BallGHandle = DX.LoadGraph("ball.png");
-            int WallGHandle = DX.LoadGraph("wall.png");
+            //int WallGHandle = DX.LoadGraph("wall.png");
 
             //getGraphicSize
             int BallGSizeX;
             int BallGSizeY;
             DX.GetGraphSize(BallGHandle, out BallGSizeX, out BallGSizeY);
 
-            //getGraphicSize
-            int WallGSizeX;
-            int WallGSizeY;
-            DX.GetGraphSize(WallGHandle, out WallGSizeX, out WallGSizeY);
+            //import PNGfile to memory
+            int[] WallGHandle = new int[WALL_NUM];
 
+            //getGraphicSize
+            int[] WallGSizeX = new int[WALL_NUM];
+            int[] WallGSizeY = new int[WALL_NUM];
+            for (int i = 0; i < WALL_NUM; i++)
+            {
+                WallGHandle[i] = DX.LoadGraph("wall.png");
+                DX.GetGraphSize(WallGHandle[i], out WallGSizeX[i], out WallGSizeY[i]);   
+            }
+            /*-----------------------------------------------------------------------------*/
             //BallPosition
-            int BallX = 100;
-            int BallY = 50;
+            int BallX = 300;
+            int BallY = 250;
+
             //BallSpeed
             int BallVX = 10;
             int BallVY = 5;
 
-            //ボールの中心
+            //CenterOfBall
             double BallCenterX;
             double BallCenterY;
 
-            int WallX = 300;
-            int WallY = 200;
+            /*-----------------------------------------------------------------------------*/
+            //BlockPosition
+            int[] WallX = new int[] { 150, 210, 270, 330, 390 };
+            int[] WallY = new int[] { 100, 160, 80, 110, 100 };
+            int[] WallHP = new int[] { 3, 3, 3, 3, 3 };
+            int[] WallHitFlag = new int[] { 0, 0, 0, 0, 0 };
 
-            //ブロックの中心
+            //CenterOfBlock
             double WallCenterX;
             double WallCenterY;
 
@@ -72,46 +86,72 @@ namespace Test
                 BallCenterX = BallX + BallGSizeX / 2;
                 BallCenterY = BallY + BallGSizeY / 2;
 
-                WallCenterX = WallX + WallGSizeX / 2;
-                WallCenterY = WallY + WallGSizeY / 2;
-
-                if (Math.Abs(BallCenterX - WallCenterX) <= (BallGSizeX + WallGSizeX) / 2)
+                //ブロックの数だけループする
+                for (int i = 0; i < WALL_NUM; i++)
                 {
-                    //fromUnder
-                    if ((BallY - BallVY >= WallY + WallGSizeY) && (BallY <= WallY + WallGSizeY))
+                    //HPが１以上なら
+                    if (WallHP[i] > 0)
                     {
-                        BallVY *= -1;
-                        BallY = (WallY + WallGSizeY) * 2 - BallY;
-                    }
-                    //fromUP
-                    if ((BallY - BallVY + BallGSizeY <= WallY) && (BallY + BallGSizeY >= WallY))
-                    {
-                        BallVY *= -1;
-                        BallY = (WallY - BallGSizeY) * 2 - BallY;
-                    }
-                    //piledUpToSide
-                    if (Math.Abs(BallCenterY - WallCenterY) <= (BallGSizeY + WallGSizeY) / 2)
-                    {
-                        //fromLeft
-                        if ((BallX - BallVX >= WallX + WallGSizeX) && (BallX <= WallX + WallGSizeX))
-                        {
-                            BallVX *= -1;
-                            BallX = (WallX + WallGSizeX) * 2 - BallX;
-                        }
-                        //fromRight
-                        if ((BallX - BallVX + BallGSizeX <= WallX) && (BallX + BallGSizeX >= WallX))
-                        {
-                            BallVX *= -1;
-                            BallX = (WallX - BallGSizeX) * 2 - BallX;
-                        }
+                        WallCenterX = WallX[i] + WallGSizeX[i] / 2;
+                        WallCenterY = WallY[i] + WallGSizeY[i] / 2;
 
+                        if (Math.Abs(BallCenterX - WallCenterX) <= (BallGSizeX + WallGSizeX[i]) / 2)
+                        {
+                            //fromUnder
+                            if ((BallY - BallVY >= WallY[i] + WallGSizeY[i]) && (BallY <= WallY[i] + WallGSizeY[i]))
+                            {
+                                BallVY *= -1;
+                                BallY = (WallY[i] + WallGSizeY[i]) * 2 - BallY;
+                                WallHitFlag[i] = DX.TRUE;
+                            }
+                            //fromUP
+                            if ((BallY - BallVY + BallGSizeY <= WallY[i]) && (BallY + BallGSizeY >= WallY[i]))
+                            {
+                                BallVY *= -1;
+                                BallY = (WallY[i] - BallGSizeY) * 2 - BallY;
+                                WallHitFlag[i] = DX.TRUE;
+                            }
+                            //piledUpToSide
+                            if (Math.Abs(BallCenterY - WallCenterY) <= (BallGSizeY + WallGSizeY[i]) / 2)
+                            {
+                                //fromLeft
+                                if ((BallX - BallVX >= WallX[i] + WallGSizeX[i]) && (BallX <= WallX[i] + WallGSizeX[i]))
+                                {
+                                    BallVX *= -1;
+                                    BallX = (WallX[i] + WallGSizeX[i]) * 2 - BallX;
+                                    WallHitFlag[i] = DX.TRUE;
+                                }
+                                //fromRight
+                                if ((BallX - BallVX + BallGSizeX <= WallX[i]) && (BallX + BallGSizeX >= WallX[i]))
+                                {
+                                    BallVX *= -1;
+                                    BallX = (WallX[i] - BallGSizeX) * 2 - BallX;
+                                    WallHitFlag[i] = DX.TRUE;
+                                }
+                            }
+
+                            //判定で当たったと判断
+                            if (WallHitFlag[i] == DX.TRUE)
+                            {
+                                WallHP[i]--;
+                                WallHitFlag[i] = DX.FALSE;
+                            }
+                        }   
+                    }
+                }
+
+                
+                DX.DrawGraph(BallX, BallY, BallGHandle, DX.TRUE);
+                DX.clsDx();
+                for (int i = 0; i < WALL_NUM; i++)
+                {
+                    if (WallHP[i]>0)
+                    {
+                        DX.DrawGraph(WallX[i], WallY[i], WallGHandle[i], DX.TRUE);      
                     }
                 }
 
                 // ボールを移動させる(＝表示させる座標を変更する)
-                DX.DrawGraph(BallX, BallY, BallGHandle, DX.TRUE);
-                DX.DrawGraph(WallX, WallY, WallGHandle, DX.TRUE);
-
                 BallX += BallVX;
                 BallY += BallVY;
 
