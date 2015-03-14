@@ -1,0 +1,6 @@
+c:\users\junya nakamura\documents\visual studio 2013\Projects\Breakout\Breakout\bin\Release\Breakout.exe.config
+c:\users\junya nakamura\documents\visual studio 2013\Projects\Breakout\Breakout\bin\Release\Breakout.exe
+c:\users\junya nakamura\documents\visual studio 2013\Projects\Breakout\Breakout\bin\Release\Breakout.pdb
+c:\users\junya nakamura\documents\visual studio 2013\Projects\Breakout\Breakout\obj\Release\Breakout.csprojResolveAssemblyReference.cache
+c:\users\junya nakamura\documents\visual studio 2013\Projects\Breakout\Breakout\obj\Release\Breakout.exe
+c:\users\junya nakamura\documents\visual studio 2013\Projects\Breakout\Breakout\obj\Release\Breakout.pdb
